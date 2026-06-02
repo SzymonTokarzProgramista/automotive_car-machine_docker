@@ -1,0 +1,11 @@
+service:
+  name: postgres
+  container: automotive_car_postgres
+  image: postgres:16-alpine
+  public_url: localhost:5432
+  internal_url: postgres:5432
+
+runtime:
+  env_source: ../automotive_car-machine_docker/.env
+  volume: postgres_data
+

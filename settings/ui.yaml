@@ -1,0 +1,11 @@
+service:
+  name: ui
+  repository: ../automotive_car-web_ui
+  container: automotive_car_web_ui
+  public_url: http://localhost:5173
+
+runtime:
+  env_source: ../automotive_car-machine_docker/.env
+  settings_mount: /machine/settings
+  certificates_mount: /machine/certificates
+

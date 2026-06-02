@@ -1,0 +1,22 @@
+system:
+  name: automotive-car-machine
+  description: Central configuration source for local machine services.
+
+services:
+  backend:
+    repository: ../automotive_car-web_backend
+    public_url: http://localhost:8000
+    internal_url: http://backend:8000
+    settings_mount: /machine/settings
+    certificates_mount: /machine/certificates
+
+  ui:
+    repository: ../automotive_car-web_ui
+    public_url: http://localhost:5173
+    settings_mount: /machine/settings
+    certificates_mount: /machine/certificates
+
+  postgres:
+    image: postgres:16-alpine
+    internal_url: postgres:5432
+

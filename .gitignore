@@ -1,0 +1,9 @@
+certificates/*
+!certificates/.gitkeep
+
+*.pem
+*.key
+*.crt
+
+!.env.example
+.env

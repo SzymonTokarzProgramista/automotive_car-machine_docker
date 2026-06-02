@@ -1,0 +1,12 @@
+service:
+  name: backend
+  repository: ../automotive_car-web_backend
+  container: automotive_car_backend
+  public_url: http://localhost:8000
+  internal_url: http://backend:8000
+
+runtime:
+  env_source: ../automotive_car-machine_docker/.env
+  settings_mount: /machine/settings
+  certificates_mount: /machine/certificates
+
