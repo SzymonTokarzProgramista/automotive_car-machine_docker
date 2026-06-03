@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: automotive-car-backend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: automotive-car-secrets
+                  key: DATABASE_URL
+            - name: CAMERA_STREAM_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: CAMERA_STREAM_URL
+            - name: CORS_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: CORS_ORIGINS
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: automotive-car-secrets
+                  key: JWT_SECRET_KEY
+            - name: JWT_EXPIRES_MINUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: JWT_EXPIRES_MINUTES
+            - name: RATE_LIMIT_WINDOW_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: RATE_LIMIT_WINDOW_SECONDS
+            - name: RATE_LIMIT_GENERAL_REQUESTS
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: RATE_LIMIT_GENERAL_REQUESTS
+            - name: RATE_LIMIT_AUTH_REQUESTS
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: RATE_LIMIT_AUTH_REQUESTS
+            - name: EMAIL_VERIFICATION_REQUIRED
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: EMAIL_VERIFICATION_REQUIRED
+            - name: EMAIL_VERIFICATION_EXPIRES_MINUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: EMAIL_VERIFICATION_EXPIRES_MINUTES
+            - name: PUBLIC_UI_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: PUBLIC_UI_URL
+            - name: SMTP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: SMTP_HOST
+            - name: SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: SMTP_PORT
+            - name: SMTP_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: SMTP_USERNAME
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: automotive-car-secrets
+                  key: SMTP_PASSWORD
+            - name: SMTP_FROM_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: SMTP_FROM_EMAIL
+            - name: SMTP_USE_TLS
+              valueFrom:
+                configMapKeyRef:
+                  name: automotive-car-config
+                  key: SMTP_USE_TLS
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30

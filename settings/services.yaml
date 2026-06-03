@@ -13,10 +13,23 @@ services:
   ui:
     repository: ../automotive_car-web_ui
     public_url: http://localhost:5173
+    internal_url: http://ui:5173
     settings_mount: /machine/settings
     certificates_mount: /machine/certificates
+
+  nginx:
+    image: nginx:1.27-alpine
+    public_url: http://localhost:5173
+    ui_upstream: http://ui:5173
+    backend_upstream: http://backend:8000
 
   postgres:
     image: postgres:16-alpine
     internal_url: postgres:5432
 
+  thingsboard:
+    image: thingsboard/tb-postgres
+    public_url: http://localhost:9090
+    mqtt_url: mqtt://localhost:1883
+    internal_url: http://thingsboard:9090
+    internal_mqtt_url: mqtt://thingsboard:1883

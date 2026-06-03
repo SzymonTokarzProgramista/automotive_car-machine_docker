@@ -1,0 +1,17 @@
+service:
+  name: nginx
+  container: automotive_car_nginx
+  image: nginx:1.27-alpine
+  public_url: http://localhost:5173
+  ui_upstream: http://ui:5173
+  backend_upstream: http://backend:8000
+
+runtime:
+  env_source: ../automotive_car-machine_docker/.env
+  config_file: settings/nginx.conf
+
+routes:
+  ui: /
+  backend_api: /api/
+  backend_auth: /auth/
+  backend_health: /health

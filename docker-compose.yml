@@ -40,13 +40,42 @@ services:
     container_name: automotive_car_web_ui
     environment:
       VITE_API_URL: ${VITE_API_URL}
-    ports:
-      - "${UI_PORT}:5173"
+    expose:
+      - "5173"
     volumes:
       - ./settings:/machine/settings:ro
       - ./certificates:/machine/certificates:ro
     depends_on:
       - backend
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: automotive_car_nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ./settings/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./settings:/machine/settings:ro
+      - ./certificates:/machine/certificates:ro
+    depends_on:
+      - ui
+      - backend
+
+  thingsboard:
+    image: thingsboard/tb-postgres:${THINGSBOARD_VERSION}
+    container_name: automotive_car_thingsboard
+    restart: unless-stopped
+    ports:
+      - "${THINGSBOARD_WEB_PORT}:9090"
+      - "${THINGSBOARD_MQTT_PORT}:1883"
+      - "${THINGSBOARD_EDGE_RPC_PORT}:7070"
+      - "${THINGSBOARD_COAP_PORT_RANGE}:5683-5688/udp"
+    volumes:
+      - thingsboard_data:/data
+      - thingsboard_logs:/var/log/thingsboard
+      - ./settings:/machine/settings:ro
+      - ./certificates:/machine/certificates:ro
 
   postgres:
     image: postgres:16-alpine
@@ -67,3 +96,5 @@ services:
 
 volumes:
   postgres_data:
+  thingsboard_data:
+  thingsboard_logs:

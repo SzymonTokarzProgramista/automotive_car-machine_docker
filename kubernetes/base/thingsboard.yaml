@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: thingsboard
+spec:
+  selector:
+    app: thingsboard
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+    - name: mqtt
+      port: 1883
+      targetPort: 1883
+    - name: edge-rpc
+      port: 7070
+      targetPort: 7070
+    - name: coap
+      port: 5683
+      targetPort: 5683
+      protocol: UDP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thingsboard-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: thingsboard-logs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thingsboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thingsboard
+  template:
+    metadata:
+      labels:
+        app: thingsboard
+    spec:
+      containers:
+        - name: thingsboard
+          image: thingsboard/tb-postgres:latest
+          ports:
+            - containerPort: 9090
+              name: http
+            - containerPort: 1883
+              name: mqtt
+            - containerPort: 7070
+              name: edge-rpc
+            - containerPort: 5683
+              name: coap
+              protocol: UDP
+          volumeMounts:
+            - name: thingsboard-data
+              mountPath: /data
+            - name: thingsboard-logs
+              mountPath: /var/log/thingsboard
+      volumes:
+        - name: thingsboard-data
+          persistentVolumeClaim:
+            claimName: thingsboard-data
+        - name: thingsboard-logs
+          persistentVolumeClaim:
+            claimName: thingsboard-logs

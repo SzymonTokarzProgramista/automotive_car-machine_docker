@@ -1,0 +1,18 @@
+service:
+  name: thingsboard
+  container: automotive_car_thingsboard
+  image: thingsboard/tb-postgres
+  public_url: http://localhost:9090
+  mqtt_url: mqtt://localhost:1883
+  internal_url: http://thingsboard:9090
+  internal_mqtt_url: mqtt://thingsboard:1883
+
+runtime:
+  env_source: ../automotive_car-machine_docker/.env
+  data_volume: thingsboard_data
+  logs_volume: thingsboard_logs
+
+telemetry:
+  intended_source: automotive_car-vehicle_controller
+  protocol: mqtt
+  notes: Vehicle telemetry can be published directly to ThingsBoard MQTT or bridged later through a telemetry gateway.
